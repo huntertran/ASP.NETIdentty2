@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FD5D1AFD-2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8883A4C2-A8DF-4F24-ADF7-DAEBFBEFD21B}"
 	ProjectSection(SolutionItems) = preProject
+		License.txt = License.txt
 		unittest.testsettings = unittest.testsettings
 	EndProjectSection
 EndProject
