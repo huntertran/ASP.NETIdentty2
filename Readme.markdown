@@ -1,3 +1,3 @@
-Microsoft ASP.NET Identity
-
-At present, the ASP.NET Identity framework code is not public and therefore will not be published on this site. However, we are planning to change that, and as soon as we are able, the code will be published in this repository. In the meantime, the site will be used as a single point for tracking issues, hosting discussions, and providing links to documentation.
+ASP.NET Identity
+ASP.NET Identity is the new membership system for ASP.NET applications. ASP.NET Identity makes it really easy to customize profile and add Login/ LogOut functionality to the application. Please visit http://www.asp.net/identity to learn more on getting started with ASP.NET Identity and how you can add users and protect your websites using Roles.
+Please click the HOME tab for instructions on how to enlist and build the source code.
