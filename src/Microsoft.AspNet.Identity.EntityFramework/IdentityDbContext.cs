@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.Validation;
@@ -35,7 +36,8 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         ///     Constructor which takes the connection string to use
         /// </summary>
         /// <param name="nameOrConnectionString"></param>
-        public IdentityDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
+        public IdentityDbContext(string nameOrConnectionString)
+            : base(nameOrConnectionString)
         {
         }
 
@@ -53,6 +55,46 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// </param>
         public IdentityDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
             : base(existingConnection, model, contextOwnsConnection)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using conventions to create the name of
+        ///     the database to which a connection will be made, and initializes it from
+        ///     the given model.  The by-convention name is the full name (namespace + class
+        ///     name) of the derived context class.  See the class remarks for how this is
+        ///     used to create a connection.
+        /// </summary>
+        /// <param name="model">The model that will back this context.</param>
+        public IdentityDbContext(DbCompiledModel model)
+            : base(model)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using the existing connection to connect
+        ///     to a database.  The connection will not be disposed when the context is disposed
+        ///     if contextOwnsConnection is false.
+        /// </summary>
+        /// <param name="existingConnection">An existing connection to use for the new context.</param>
+        /// <param name="contextOwnsConnection">If set to true the connection is disposed when the context is disposed, otherwise
+        ///     the caller must dispose the connection.
+        /// </param>
+        public IdentityDbContext(DbConnection existingConnection, bool contextOwnsConnection)
+            : base(existingConnection, contextOwnsConnection)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using the given string as the name or connection
+        //     string for the database to which a connection will be made, and initializes
+        //     it from the given model.  See the class remarks for how this is used to create
+        //     a connection.
+        /// </summary>
+        /// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
+        /// <param name="model">The model that will back this context.</param>
+        public IdentityDbContext(string nameOrConnectionString, DbCompiledModel model)
+            : base(nameOrConnectionString, model)
         {
         }
     }
@@ -110,6 +152,46 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// </param>
         public IdentityDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
             : base(existingConnection, model, contextOwnsConnection)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using conventions to create the name of
+        ///     the database to which a connection will be made, and initializes it from
+        ///     the given model.  The by-convention name is the full name (namespace + class
+        ///     name) of the derived context class.  See the class remarks for how this is
+        ///     used to create a connection.
+        /// </summary>
+        /// <param name="model">The model that will back this context.</param>
+        public IdentityDbContext(DbCompiledModel model)
+            : base(model)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using the existing connection to connect
+        ///     to a database.  The connection will not be disposed when the context is disposed
+        ///     if contextOwnsConnection is false.
+        /// </summary>
+        /// <param name="existingConnection">An existing connection to use for the new context.</param>
+        /// <param name="contextOwnsConnection">If set to true the connection is disposed when the context is disposed, otherwise
+        ///     the caller must dispose the connection.
+        /// </param>
+        public IdentityDbContext(DbConnection existingConnection, bool contextOwnsConnection)
+            : base(existingConnection, contextOwnsConnection)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using the given string as the name or connection
+        //     string for the database to which a connection will be made, and initializes
+        //     it from the given model.  See the class remarks for how this is used to create
+        //     a connection.
+        /// </summary>
+        /// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
+        /// <param name="model">The model that will back this context.</param>
+        public IdentityDbContext(string nameOrConnectionString, DbCompiledModel model)
+            : base(nameOrConnectionString, model)
         {
         }
 
@@ -214,6 +296,45 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         {
         }
 
+        /// <summary>
+        ///     Constructs a new context instance using conventions to create the name of
+        ///     the database to which a connection will be made, and initializes it from
+        ///     the given model.  The by-convention name is the full name (namespace + class
+        ///     name) of the derived context class.  See the class remarks for how this is
+        ///     used to create a connection.
+        /// </summary>
+        /// <param name="model">The model that will back this context.</param>
+        public IdentityDbContext(DbCompiledModel model)
+            : base(model)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using the existing connection to connect
+        ///     to a database.  The connection will not be disposed when the context is disposed
+        ///     if contextOwnsConnection is false.
+        /// </summary>
+        /// <param name="existingConnection">An existing connection to use for the new context.</param>
+        /// <param name="contextOwnsConnection">If set to true the connection is disposed when the context is disposed, otherwise
+        ///     the caller must dispose the connection.
+        /// </param>
+        public IdentityDbContext(DbConnection existingConnection, bool contextOwnsConnection)
+            : base(existingConnection, contextOwnsConnection)
+        {
+        }
+
+        /// <summary>
+        ///     Constructs a new context instance using the given string as the name or connection
+        //     string for the database to which a connection will be made, and initializes
+        //     it from the given model.  See the class remarks for how this is used to create
+        //     a connection.
+        /// </summary>
+        /// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
+        /// <param name="model">The model that will back this context.</param>
+        public IdentityDbContext(string nameOrConnectionString, DbCompiledModel model)
+            : base(nameOrConnectionString, model)
+        {
+        }
 
         /// <summary>
         ///     IDbSet of Users
@@ -250,17 +371,17 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             user.Property(u => u.UserName)
                 .IsRequired()
                 .HasMaxLength(256)
-                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("UserNameIndex") {IsUnique = true}));
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("UserNameIndex") { IsUnique = true }));
 
             // CONSIDER: u.Email is Required if set on options?
             user.Property(u => u.Email).HasMaxLength(256);
 
             modelBuilder.Entity<TUserRole>()
-                .HasKey(r => new {r.UserId, r.RoleId})
+                .HasKey(r => new { r.UserId, r.RoleId })
                 .ToTable("AspNetUserRoles");
 
             modelBuilder.Entity<TUserLogin>()
-                .HasKey(l => new {l.LoginProvider, l.ProviderKey, l.UserId})
+                .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ToTable("AspNetUserLogins");
 
             modelBuilder.Entity<TUserClaim>()
@@ -271,7 +392,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             role.Property(r => r.Name)
                 .IsRequired()
                 .HasMaxLength(256)
-                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("RoleNameIndex") {IsUnique = true}));
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("RoleNameIndex") { IsUnique = true }));
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
         }
 
