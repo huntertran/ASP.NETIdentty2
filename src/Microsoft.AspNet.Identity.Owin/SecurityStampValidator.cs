@@ -4,6 +4,7 @@
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 
 namespace Microsoft.AspNet.Identity.Owin
@@ -95,6 +96,10 @@ namespace Microsoft.AspNet.Identity.Owin
                                     var identity = await regenerateIdentityCallback.Invoke(manager, user);
                                     if (identity != null)
                                     {
+                                        // Fix for regression where this value is not updated
+                                        // Setting it to null so that it is refreshed by the cookie middleware
+                                        context.Properties.IssuedUtc = null;
+                                        context.Properties.ExpiresUtc = null;
                                         context.OwinContext.Authentication.SignIn(context.Properties, identity);
                                     }
                                 }

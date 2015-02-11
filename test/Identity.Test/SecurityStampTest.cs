@@ -22,7 +22,7 @@ namespace Identity.Test
         {
             var owinContext = new OwinContext();
             var id = new ClaimsIdentity(DefaultAuthenticationTypes.ApplicationCookie);
-            var ticket = new AuthenticationTicket(id, new AuthenticationProperties {IssuedUtc = DateTimeOffset.UtcNow});
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
             await
                 SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
@@ -47,7 +47,7 @@ namespace Identity.Test
             var user = new IdentityUser("test");
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var id = await SignIn(manager, user);
-            var ticket = new AuthenticationTicket(id, new AuthenticationProperties {IssuedUtc = DateTimeOffset.UtcNow});
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
             await
                 SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
@@ -73,7 +73,7 @@ namespace Identity.Test
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var id = await SignIn(manager, user);
             UnitTestHelper.IsSuccess(await manager.DeleteAsync(user));
-            var ticket = new AuthenticationTicket(id, new AuthenticationProperties {IssuedUtc = DateTimeOffset.UtcNow});
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
             await
                 SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(TimeSpan.Zero, SignIn)
@@ -115,7 +115,7 @@ namespace Identity.Test
             var user = new IdentityUser("test");
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var id = await SignIn(manager, user);
-            var ticket = new AuthenticationTicket(id, new AuthenticationProperties {IssuedUtc = DateTimeOffset.UtcNow});
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow });
             var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
 
             // change stamp does not fail validation when not enough time elapsed
@@ -125,6 +125,31 @@ namespace Identity.Test
                     TimeSpan.FromDays(1), SignIn).Invoke(context);
             Assert.NotNull(context.Identity);
             Assert.Equal(user.Id, id.GetUserId());
+        }
+
+        [Fact]
+        public async Task OnValidateIdentityResetsContextPropertiesDatesTest()
+        {
+            // Arrange
+            var owinContext = new OwinContext();
+            await CreateManager(owinContext);
+            var manager = owinContext.GetUserManager<UserManager<IdentityUser>>();
+            var user = new IdentityUser(string.Format("{0}{1}", "test", new Random().Next()));
+            UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
+            var id = await SignIn(manager, user);
+            var ticket = new AuthenticationTicket(id, new AuthenticationProperties { IssuedUtc = DateTimeOffset.UtcNow, ExpiresUtc = DateTimeOffset.UtcNow.Add(TimeSpan.FromHours(1)), IsPersistent = true });
+            var context = new CookieValidateIdentityContext(owinContext, ticket, new CookieAuthenticationOptions());
+
+            await
+                SecurityStampValidator.OnValidateIdentity<UserManager<IdentityUser>, IdentityUser>(
+                    TimeSpan.Zero, SignIn).Invoke(context);
+
+            // Assert
+            Assert.NotNull(context.Identity);
+            Assert.NotNull(context.Properties);
+            Assert.Null(context.Properties.IssuedUtc);
+            Assert.Null(context.Properties.ExpiresUtc);
+            Assert.True(context.Properties.IsPersistent);
         }
 
         private Task<ClaimsIdentity> SignIn(UserManager<IdentityUser> manager, IdentityUser user)

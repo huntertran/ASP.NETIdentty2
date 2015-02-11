@@ -87,9 +87,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
         /// <summary>
         ///     Constructs a new context instance using the given string as the name or connection
-        //     string for the database to which a connection will be made, and initializes
-        //     it from the given model.  See the class remarks for how this is used to create
-        //     a connection.
+        ///     string for the database to which a connection will be made, and initializes
+        ///     it from the given model.  See the class remarks for how this is used to create
+        ///     a connection.
         /// </summary>
         /// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
         /// <param name="model">The model that will back this context.</param>
@@ -184,9 +184,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
         /// <summary>
         ///     Constructs a new context instance using the given string as the name or connection
-        //     string for the database to which a connection will be made, and initializes
-        //     it from the given model.  See the class remarks for how this is used to create
-        //     a connection.
+        ///     string for the database to which a connection will be made, and initializes
+        ///     it from the given model.  See the class remarks for how this is used to create
+        ///     a connection.
         /// </summary>
         /// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
         /// <param name="model">The model that will back this context.</param>
@@ -325,9 +325,9 @@ namespace Microsoft.AspNet.Identity.EntityFramework
 
         /// <summary>
         ///     Constructs a new context instance using the given string as the name or connection
-        //     string for the database to which a connection will be made, and initializes
-        //     it from the given model.  See the class remarks for how this is used to create
-        //     a connection.
+        ///     string for the database to which a connection will be made, and initializes
+        ///     it from the given model.  See the class remarks for how this is used to create
+        ///     a connection.
         /// </summary>
         /// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
         /// <param name="model">The model that will back this context.</param>
