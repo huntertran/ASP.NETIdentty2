@@ -176,7 +176,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             var claimType = claim.Type;
             if (AreClaimsLoaded(user))
             {
-                claims = user.Claims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType);
+                claims = user.Claims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType).ToList();
             }
             else
             {
@@ -854,6 +854,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 var userId = user.Id;
                 await _userClaims.Where(uc => uc.UserId.Equals(userId)).LoadAsync().WithCurrentCulture();
+                Context.Entry(user).Collection(u => u.Claims).IsLoaded = true;
             }
         }
 
@@ -863,6 +864,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 var userId = user.Id;
                 await _userRoles.Where(uc => uc.UserId.Equals(userId)).LoadAsync().WithCurrentCulture();
+                Context.Entry(user).Collection(u => u.Roles).IsLoaded = true;
             }
         }
 
@@ -877,6 +879,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 var userId = user.Id;
                 await _logins.Where(uc => uc.UserId.Equals(userId)).LoadAsync().WithCurrentCulture();
+                Context.Entry(user).Collection(u => u.Logins).IsLoaded = true;
             }
         }
 

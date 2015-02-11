@@ -14,7 +14,9 @@ namespace Microsoft.AspNet.Identity.Owin
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     /// <typeparam name="TKey"></typeparam>
-    public class SignInManager<TUser, TKey> : IDisposable where TUser : class, IUser<TKey> where TKey : IEquatable<TKey>
+    public class SignInManager<TUser, TKey> : IDisposable
+        where TUser : class, IUser<TKey>
+        where TKey : IEquatable<TKey>
     {
         /// <summary>
         /// Constructor
@@ -33,7 +35,7 @@ namespace Microsoft.AspNet.Identity.Owin
             }
             UserManager = userManager;
             AuthenticationManager = authenticationManager;
-        } 
+        }
 
         private string _authType;
         /// <summary>

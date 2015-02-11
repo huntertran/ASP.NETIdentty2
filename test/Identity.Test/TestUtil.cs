@@ -34,6 +34,19 @@ namespace Identity.Test
         {
             return CreateManager(UnitTestHelper.CreateDefaultDb());
         }
+
+        public static async Task CreateManager(OwinContext context)
+        {
+            var options = new IdentityFactoryOptions<UserManager<IdentityUser>>
+            {
+                Provider = new TestProvider(UnitTestHelper.CreateDefaultDb()),
+                DataProtectionProvider = new DpapiDataProtectionProvider()
+            };
+            var middleware =
+                new IdentityFactoryMiddleware
+                    <UserManager<IdentityUser>, IdentityFactoryOptions<UserManager<IdentityUser>>>(null, options);
+            await middleware.Invoke(context);
+        }
     }
 
     public class TestProvider : IdentityFactoryProvider<UserManager<IdentityUser>>

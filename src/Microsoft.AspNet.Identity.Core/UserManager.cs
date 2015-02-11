@@ -1740,6 +1740,12 @@ namespace Microsoft.AspNet.Identity
                 throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, Resources.UserIdNotFound,
                     userId));
             }
+
+            if (await GetAccessFailedCountAsync(user.Id) == 0)
+            {
+                return IdentityResult.Success;
+            }
+
             await store.ResetAccessFailedCountAsync(user).WithCurrentCulture();
             return await UpdateAsync(user).WithCurrentCulture();
         }

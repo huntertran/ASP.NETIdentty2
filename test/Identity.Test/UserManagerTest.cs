@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security.DataProtection;
 using Xunit;
+using Moq;
 
 namespace Identity.Test
 {
@@ -476,7 +477,7 @@ namespace Identity.Test
         {
             var manager = TestUtil.CreateManager();
             var user = new IdentityUser("passwordValidator");
-            manager.PasswordValidator = new PasswordValidator {RequiredLength = 6, RequireNonLetterOrDigit = true};
+            manager.PasswordValidator = new PasswordValidator { RequiredLength = 6, RequireNonLetterOrDigit = true };
             const string alphaError = "Passwords must have at least one non letter or digit character.";
             const string lengthError = "Passwords must be at least 6 characters.";
             UnitTestHelper.IsFailure(await manager.CreateAsync(user, "ab@de"), lengthError);
@@ -530,7 +531,7 @@ namespace Identity.Test
         public async Task CreateLocalUserWithOnlyWhitespaceUserNameFails()
         {
             var manager = new UserManager<IdentityUser>(new UserStore<IdentityUser>());
-            var result = await manager.CreateAsync(new IdentityUser {UserName = " "}, "password");
+            var result = await manager.CreateAsync(new IdentityUser { UserName = " " }, "password");
             UnitTestHelper.IsFailure(result, "Name cannot be null or empty.");
         }
 
@@ -538,7 +539,7 @@ namespace Identity.Test
         public async Task CreateLocalUserWithInvalidUserNameFails()
         {
             var manager = TestUtil.CreateManager();
-            var result = await manager.CreateAsync(new IdentityUser {UserName = "a\0b"}, "password");
+            var result = await manager.CreateAsync(new IdentityUser { UserName = "a\0b" }, "password");
             UnitTestHelper.IsFailure(result, "User name a\0b is invalid, can only contain letters or digits.");
         }
 
@@ -554,7 +555,7 @@ namespace Identity.Test
         public async Task CreateExternalUserWithNullFails()
         {
             var manager = TestUtil.CreateManager();
-            UnitTestHelper.IsFailure(await manager.CreateAsync(new IdentityUser {UserName = null}),
+            UnitTestHelper.IsFailure(await manager.CreateAsync(new IdentityUser { UserName = null }),
                 "Name cannot be null or empty.");
         }
 
@@ -611,7 +612,7 @@ namespace Identity.Test
         public async Task LazyLoadDisabledFindByNameTest()
         {
             var db = UnitTestHelper.CreateDefaultDb();
-            var user = new IdentityUser("Hao") {Email = "hao@foo.com"};
+            var user = new IdentityUser("Hao") { Email = "hao@foo.com" };
             await LazyLoadTestSetup(db, user);
 
             // Ensure lazy loading is not broken
@@ -629,7 +630,7 @@ namespace Identity.Test
         public async Task LazyLoadDisabledFindByLoginTest()
         {
             var db = UnitTestHelper.CreateDefaultDb();
-            var user = new IdentityUser("Hao") {Email = "hao@foo.com"};
+            var user = new IdentityUser("Hao") { Email = "hao@foo.com" };
             await LazyLoadTestSetup(db, user);
 
             // Ensure lazy loading is not broken
@@ -647,7 +648,7 @@ namespace Identity.Test
         public async Task LazyLoadDisabledFindByEmailTest()
         {
             var db = UnitTestHelper.CreateDefaultDb();
-            var user = new IdentityUser("Hao") {Email = "hao@foo.com"};
+            var user = new IdentityUser("Hao") { Email = "hao@foo.com" };
             await LazyLoadTestSetup(db, user);
 
             // Ensure lazy loading is not broken
@@ -1092,7 +1093,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             var user = new IdentityUser("ClaimsAddRemove");
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
-            Claim[] claims = {new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3")};
+            Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
             foreach (Claim c in claims)
             {
                 UnitTestHelper.IsSuccess(await manager.AddClaimAsync(user.Id, c));
@@ -1116,7 +1117,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             var user = new IdentityUser("ClaimsAddRemove");
             UnitTestHelper.IsSuccess(manager.Create(user));
-            Claim[] claims = {new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3")};
+            Claim[] claims = { new Claim("c", "v"), new Claim("c2", "v2"), new Claim("c2", "v3") };
             foreach (Claim c in claims)
             {
                 UnitTestHelper.IsSuccess(manager.AddClaim(user.Id, c));
@@ -1169,7 +1170,7 @@ namespace Identity.Test
         public async Task CanRelaxUserNameAndPasswordValidationTest()
         {
             var manager = TestUtil.CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser>(manager) {AllowOnlyAlphanumericUserNames = false};
+            manager.UserValidator = new UserValidator<IdentityUser>(manager) { AllowOnlyAlphanumericUserNames = false };
             manager.PasswordValidator = new MinimumLengthValidator(1);
             UnitTestHelper.IsSuccess(await manager.CreateAsync(new IdentityUser("Some spaces"), "pwd"));
         }
@@ -1378,7 +1379,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             const string userName = "EmailTest";
             const string email = "email@test.com";
-            var user = new IdentityUser(userName) {Email = email};
+            var user = new IdentityUser(userName) { Email = email };
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var fetch = await manager.FindByEmailAsync(email);
             Assert.Equal(user, fetch);
@@ -1390,7 +1391,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             var userName = "EmailTest";
             var email = "email@test.com";
-            var user = new IdentityUser(userName) {Email = email};
+            var user = new IdentityUser(userName) { Email = email };
             UnitTestHelper.IsSuccess(manager.Create(user));
             var fetch = manager.FindByEmail(email);
             Assert.Equal(user, fetch);
@@ -1418,11 +1419,11 @@ namespace Identity.Test
         public async Task CreateDupeEmailFailsTest()
         {
             var manager = TestUtil.CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser>(manager) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser>(manager) { RequireUniqueEmail = true };
             var userName = "EmailTest";
             var email = "email@test.com";
-            UnitTestHelper.IsSuccess(await manager.CreateAsync(new IdentityUser(userName) {Email = email}));
-            var user = new IdentityUser("two") {Email = email};
+            UnitTestHelper.IsSuccess(await manager.CreateAsync(new IdentityUser(userName) { Email = email }));
+            var user = new IdentityUser("two") { Email = email };
             UnitTestHelper.IsFailure(await manager.CreateAsync(user), "Email 'email@test.com' is already taken.");
         }
 
@@ -1430,10 +1431,10 @@ namespace Identity.Test
         public async Task SetEmailToDupeFailsTest()
         {
             var manager = TestUtil.CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser>(manager) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser>(manager) { RequireUniqueEmail = true };
             var email = "email@test.com";
-            UnitTestHelper.IsSuccess(await manager.CreateAsync(new IdentityUser("emailtest") {Email = email}));
-            var user = new IdentityUser("two") {Email = "something@else.com"};
+            UnitTestHelper.IsSuccess(await manager.CreateAsync(new IdentityUser("emailtest") { Email = email }));
+            var user = new IdentityUser("two") { Email = "something@else.com" };
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             UnitTestHelper.IsFailure(await manager.SetEmailAsync(user.Id, email),
                 "Email 'email@test.com' is already taken.");
@@ -1443,7 +1444,7 @@ namespace Identity.Test
         public async Task RequireUniqueEmailBlocksBasicCreateTest()
         {
             var manager = TestUtil.CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser>(manager) {RequireUniqueEmail = true};
+            manager.UserValidator = new UserValidator<IdentityUser>(manager) { RequireUniqueEmail = true };
             UnitTestHelper.IsFailure(await manager.CreateAsync(new IdentityUser("emailtest"), "Email is too short."));
         }
 
@@ -1451,8 +1452,8 @@ namespace Identity.Test
         public async Task RequireUniqueEmailBlocksInvalidEmailTest()
         {
             var manager = TestUtil.CreateManager();
-            manager.UserValidator = new UserValidator<IdentityUser>(manager) {RequireUniqueEmail = true};
-            UnitTestHelper.IsFailure(await manager.CreateAsync(new IdentityUser("emailtest") {Email = "hi"}),
+            manager.UserValidator = new UserValidator<IdentityUser>(manager) { RequireUniqueEmail = true };
+            UnitTestHelper.IsFailure(await manager.CreateAsync(new IdentityUser("emailtest") { Email = "hi" }),
                 "Email 'hi' is invalid.");
         }
 
@@ -1582,7 +1583,7 @@ namespace Identity.Test
             manager.EmailService = messageService;
             const string factorId = "EmailCode";
             manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>());
-            var user = new IdentityUser("EmailCodeTest") {Email = "foo@foo.com"};
+            var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
             const string password = "password";
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user, password));
             var stamp = user.SecurityStamp;
@@ -1609,7 +1610,7 @@ namespace Identity.Test
                 Subject = "Security Code",
                 BodyFormat = "Your code is: {0}"
             });
-            var user = new IdentityUser("EmailCodeTest") {Email = "foo@foo.com"};
+            var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
             const string password = "password";
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user, password));
             var stamp = user.SecurityStamp;
@@ -1625,12 +1626,14 @@ namespace Identity.Test
         }
 
         [Fact]
-        public void EmailTokenFactorWithFormatSyncTest() {
+        public void EmailTokenFactorWithFormatSyncTest()
+        {
             var manager = TestUtil.CreateManager();
             var messageService = new TestMessageService();
             manager.EmailService = messageService;
             const string factorId = "EmailCode";
-            manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser> {
+            manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>
+            {
                 Subject = "Security Code",
                 BodyFormat = "Your code is: {0}"
             });
@@ -1655,7 +1658,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             const string factorId = "EmailCode";
             manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>());
-            var user = new IdentityUser("EmailCodeTest") {Email = "foo@foo.com"};
+            var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
@@ -1671,7 +1674,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             const string factorId = "EmailCode";
             manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>());
-            var user = new IdentityUser("EmailCodeTest") {Email = "foo@foo.com"};
+            var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
             const string password = "password";
             UnitTestHelper.IsSuccess(manager.Create(user, password));
             var stamp = user.SecurityStamp;
@@ -1687,7 +1690,7 @@ namespace Identity.Test
             var manager = TestUtil.CreateManager();
             const string factorId = "EmailCode";
             manager.RegisterTwoFactorProvider(factorId, new EmailTokenProvider<IdentityUser>());
-            var user = new IdentityUser("EmailCodeTest") {Email = "foo@foo.com"};
+            var user = new IdentityUser("EmailCodeTest") { Email = "foo@foo.com" };
             UnitTestHelper.IsSuccess(manager.Create(user));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
@@ -1726,7 +1729,8 @@ namespace Identity.Test
         }
 
         [Fact]
-        public async Task SendEmail() {
+        public async Task SendEmail()
+        {
             var manager = TestUtil.CreateManager();
             var messageService = new TestMessageService();
             manager.EmailService = messageService;
@@ -1739,7 +1743,8 @@ namespace Identity.Test
         }
 
         [Fact]
-        public void SendSmsSync() {
+        public void SendSmsSync()
+        {
             var manager = TestUtil.CreateManager();
             var messageService = new TestMessageService();
             manager.SmsService = messageService;
@@ -1751,7 +1756,8 @@ namespace Identity.Test
         }
 
         [Fact]
-        public void SendEmailSync() {
+        public void SendEmailSync()
+        {
             var manager = TestUtil.CreateManager();
             var messageService = new TestMessageService();
             manager.EmailService = messageService;
@@ -1772,7 +1778,7 @@ namespace Identity.Test
             manager.SmsService = messageService;
             const string factorId = "PhoneCode";
             manager.RegisterTwoFactorProvider(factorId, new PhoneNumberTokenProvider<IdentityUser>());
-            var user = new IdentityUser("PhoneCodeTest") {PhoneNumber = "4251234567"};
+            var user = new IdentityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
@@ -1786,7 +1792,8 @@ namespace Identity.Test
         }
 
         [Fact]
-        public void PhoneTokenFactorSyncTest() {
+        public void PhoneTokenFactorSyncTest()
+        {
             var manager = TestUtil.CreateManager();
             var messageService = new TestMessageService();
             manager.SmsService = messageService;
@@ -1816,7 +1823,7 @@ namespace Identity.Test
             {
                 MessageFormat = "Your code is: {0}"
             });
-            var user = new IdentityUser("PhoneCodeTest") {PhoneNumber = "4251234567"};
+            var user = new IdentityUser("PhoneCodeTest") { PhoneNumber = "4251234567" };
             UnitTestHelper.IsSuccess(await manager.CreateAsync(user));
             var stamp = user.SecurityStamp;
             Assert.NotNull(stamp);
@@ -1981,6 +1988,23 @@ namespace Identity.Test
         }
 
         [Fact]
+        public async Task ResetTokenCallNoopForTokenValueZero()
+        {
+            var user = new IdentityUser() { UserName = "foo" };
+            var store = new Mock<UserStore<IdentityUser>>();
+            store.Setup(x => x.ResetAccessFailedCountAsync(user)).Returns(() =>
+             {
+                 throw new Exception();
+             });
+            store.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult(user));
+            store.Setup(x => x.GetAccessFailedCountAsync(It.IsAny<IdentityUser>()))
+                .Returns(() => Task.FromResult(0));
+            var manager = new UserManager<IdentityUser>(store.Object);
+            UnitTestHelper.IsSuccess(await manager.ResetAccessFailedCountAsync(user.Id));
+        }
+
+        [Fact]
         public void Create_preserves_culture()
         {
             var originalCulture = Thread.CurrentThread.CurrentCulture;
@@ -2032,7 +2056,7 @@ namespace Identity.Test
             return new Tuple<CultureInfo, CultureInfo>(Thread.CurrentThread.CurrentCulture, Thread.CurrentThread.CurrentUICulture);
         }
 
-        private static Tuple<CultureInfo,CultureInfo> GetCurrentCultureAfter(Action action)
+        private static Tuple<CultureInfo, CultureInfo> GetCurrentCultureAfter(Action action)
         {
             action();
             return new Tuple<CultureInfo, CultureInfo>(Thread.CurrentThread.CurrentCulture, Thread.CurrentThread.CurrentUICulture);
@@ -2065,7 +2089,8 @@ namespace Identity.Test
 
         private class NoStampUserManager : UserManager<IdentityUser>
         {
-            public NoStampUserManager() : base(new UserStore<IdentityUser>(UnitTestHelper.CreateDefaultDb()))
+            public NoStampUserManager()
+                : base(new UserStore<IdentityUser>(UnitTestHelper.CreateDefaultDb()))
             {
                 UserValidator = new UserValidator<IdentityUser>(this)
                 {
