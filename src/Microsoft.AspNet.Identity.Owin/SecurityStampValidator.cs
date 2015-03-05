@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security;
 
 namespace Microsoft.AspNet.Identity.Owin
 {
@@ -96,7 +95,7 @@ namespace Microsoft.AspNet.Identity.Owin
                                 // Regenerate fresh claims if possible and resign in
                                 if (regenerateIdentityCallback != null)
                                 {
-                                    var identity = await regenerateIdentityCallback.Invoke(manager, user);
+                                    var identity = await regenerateIdentityCallback.Invoke(manager, user).WithCurrentCulture();
                                     if (identity != null)
                                     {
                                         // Fix for regression where this value is not updated

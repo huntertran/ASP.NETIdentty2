@@ -77,7 +77,7 @@ namespace Microsoft.AspNet.Identity.Owin
                 string stamp = null;
                 if (manager.SupportsUserSecurityStamp)
                 {
-                    stamp = await manager.GetSecurityStampAsync(user.Id);
+                    stamp = await manager.GetSecurityStampAsync(user.Id).WithCurrentCulture();
                 }
                 writer.Write(stamp ?? "");
             }

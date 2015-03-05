@@ -161,7 +161,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// <param name="user"></param>
         /// <param name="claim"></param>
         /// <returns></returns>
-        public virtual Task RemoveClaimAsync(TUser user, Claim claim)
+        public virtual async Task RemoveClaimAsync(TUser user, Claim claim)
         {
             ThrowIfDisposed();
             if (user == null)
@@ -182,13 +182,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             else
             {
                 var userId = user.Id;
-                claims = _userClaims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType && uc.UserId.Equals(userId));
+                claims = await _userClaims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType && uc.UserId.Equals(userId)).ToListAsync().WithCurrentCulture();
             }
             foreach (var c in claims)
             {
                 _userClaims.Remove(c);
             }
-            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -474,11 +473,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             var provider = login.LoginProvider;
             var key = login.ProviderKey;
             var userLogin =
-                await _logins.FirstOrDefaultAsync(l => l.LoginProvider == provider && l.ProviderKey == key);
+                await _logins.FirstOrDefaultAsync(l => l.LoginProvider == provider && l.ProviderKey == key).WithCurrentCulture();
             if (userLogin != null)
             {
                 var userId = userLogin.UserId;
-                return await GetUserAggregateAsync(u => u.Id.Equals(userId));
+                return await GetUserAggregateAsync(u => u.Id.Equals(userId)).WithCurrentCulture();
             }
             return null;
         }
@@ -683,7 +682,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
             }
-            var roleEntity = await _roleStore.DbEntitySet.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
+            var roleEntity = await _roleStore.DbEntitySet.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper()).WithCurrentCulture();
             if (roleEntity == null)
             {
                 throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
@@ -711,12 +710,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
             }
-            var roleEntity = await _roleStore.DbEntitySet.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
+            var roleEntity = await _roleStore.DbEntitySet.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper()).WithCurrentCulture();
             if (roleEntity != null)
             {
                 var roleId = roleEntity.Id;
                 var userId = user.Id;
-                var userRole = await _userRoles.FirstOrDefaultAsync(r => roleId.Equals(r.RoleId) && r.UserId.Equals(userId));
+                var userRole = await _userRoles.FirstOrDefaultAsync(r => roleId.Equals(r.RoleId) && r.UserId.Equals(userId)).WithCurrentCulture();
                 if (userRole != null)
                 {
                     _userRoles.Remove(userRole);
@@ -741,7 +740,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                         where userRole.UserId.Equals(userId)
                         join role in _roleStore.DbEntitySet on userRole.RoleId equals role.Id
                         select role.Name;
-            return await query.ToListAsync();
+            return await query.ToListAsync().WithCurrentCulture();
         }
 
         /// <summary>
@@ -761,12 +760,12 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             {
                 throw new ArgumentException(IdentityResources.ValueCannotBeNullOrEmpty, "roleName");
             }
-            var role = await _roleStore.DbEntitySet.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
+            var role = await _roleStore.DbEntitySet.SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper()).WithCurrentCulture();
             if (role != null)
             {
                 var userId = user.Id;
                 var roleId = role.Id;
-                return await _userRoles.AnyAsync(ur => ur.RoleId.Equals(roleId) && ur.UserId.Equals(userId));
+                return await _userRoles.AnyAsync(ur => ur.RoleId.Equals(roleId) && ur.UserId.Equals(userId)).WithCurrentCulture();
             }
             return false;
         }

@@ -73,10 +73,10 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("item");
             }
             var errors = new List<string>();
-            await ValidateUserName(item, errors);
+            await ValidateUserName(item, errors).WithCurrentCulture();
             if (RequireUniqueEmail)
             {
-                await ValidateEmail(item, errors);
+                await ValidateEmailAsync(item, errors).WithCurrentCulture();
             }
             if (errors.Count > 0)
             {
@@ -98,7 +98,7 @@ namespace Microsoft.AspNet.Identity
             }
             else
             {
-                var owner = await Manager.FindByNameAsync(user.UserName);
+                var owner = await Manager.FindByNameAsync(user.UserName).WithCurrentCulture();
                 if (owner != null && !EqualityComparer<TKey>.Default.Equals(owner.Id, user.Id))
                 {
                     errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateName, user.UserName));
@@ -107,7 +107,7 @@ namespace Microsoft.AspNet.Identity
         }
 
         // make sure email is not empty, valid, and unique
-        private async Task ValidateEmail(TUser user, List<string> errors)
+        private async Task ValidateEmailAsync(TUser user, List<string> errors)
         {
             var email = await Manager.GetEmailStore().GetEmailAsync(user).WithCurrentCulture();
             if (string.IsNullOrWhiteSpace(email))
@@ -124,7 +124,7 @@ namespace Microsoft.AspNet.Identity
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.InvalidEmail, email));
                 return;
             }
-            var owner = await Manager.FindByEmailAsync(email);
+            var owner = await Manager.FindByEmailAsync(email).WithCurrentCulture();
             if (owner != null && !EqualityComparer<TKey>.Default.Equals(owner.Id, user.Id))
             {
                 errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateEmail, email));

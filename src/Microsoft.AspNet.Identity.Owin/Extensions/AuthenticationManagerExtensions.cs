@@ -42,7 +42,7 @@ namespace Microsoft.Owin.Security
             {
                 throw new ArgumentNullException("manager");
             }
-            var result = await manager.AuthenticateAsync(externalAuthenticationType);
+            var result = await manager.AuthenticateAsync(externalAuthenticationType).WithCurrentCulture();
             if (result != null && result.Identity != null &&
                 result.Identity.FindFirst(ClaimTypes.NameIdentifier) != null)
             {
@@ -105,7 +105,7 @@ namespace Microsoft.Owin.Security
             {
                 throw new ArgumentNullException("manager");
             }
-            return GetExternalLoginInfo(await manager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie));
+            return GetExternalLoginInfo(await manager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie).WithCurrentCulture());
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Microsoft.Owin.Security
             {
                 throw new ArgumentNullException("manager");
             }
-            var result = await manager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie);
+            var result = await manager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie).WithCurrentCulture();
             // Verify that the userId is the same as what we expect if requested
             if (result != null &&
                 result.Properties != null &&
@@ -186,7 +186,7 @@ namespace Microsoft.Owin.Security
                 throw new ArgumentNullException("manager");
             }
             var result =
-                await manager.AuthenticateAsync(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
+                await manager.AuthenticateAsync(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie).WithCurrentCulture();
             return (result != null && result.Identity != null && result.Identity.GetUserId() == userId);
         }
 

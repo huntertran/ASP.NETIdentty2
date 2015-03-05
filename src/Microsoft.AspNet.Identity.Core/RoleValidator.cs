@@ -60,7 +60,7 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("item");
             }
             var errors = new List<string>();
-            await ValidateRoleName(item, errors);
+            await ValidateRoleName(item, errors).WithCurrentCulture();
             if (errors.Count > 0)
             {
                 return IdentityResult.Failed(errors.ToArray());
@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.Identity
             }
             else
             {
-                var owner = await Manager.FindByNameAsync(role.Name);
+                var owner = await Manager.FindByNameAsync(role.Name).WithCurrentCulture();
                 if (owner != null && !EqualityComparer<TKey>.Default.Equals(owner.Id, role.Id))
                 {
                     errors.Add(String.Format(CultureInfo.CurrentCulture, Resources.DuplicateName, role.Name));

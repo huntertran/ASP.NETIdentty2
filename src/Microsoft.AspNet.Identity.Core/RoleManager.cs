@@ -108,12 +108,12 @@ namespace Microsoft.AspNet.Identity
                 throw new ArgumentNullException("role");
             }
 
-            var result = await RoleValidator.ValidateAsync(role);
+            var result = await RoleValidator.ValidateAsync(role).WithCurrentCulture();
             if (!result.Succeeded)
             {
                 return result;
             }
-            await Store.CreateAsync(role);
+            await Store.CreateAsync(role).WithCurrentCulture();
             return IdentityResult.Success;
         }
 
