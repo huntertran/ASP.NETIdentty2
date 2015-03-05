@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security;
 
 namespace Microsoft.AspNet.Identity.Owin
 {
