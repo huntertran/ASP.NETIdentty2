@@ -7,6 +7,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -689,7 +690,7 @@ namespace Microsoft.AspNet.Identity.EntityFramework
                     IdentityResources.RoleNotFound, roleName));
             }
 
-            var ur = new TUserRole {UserId = user.Id, RoleId = roleEntity.Id};
+            var ur = new TUserRole { UserId = user.Id, RoleId = roleEntity.Id };
             _userRoles.Add(ur);
         }
 
@@ -890,7 +891,16 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         /// <returns></returns>
         protected virtual async Task<TUser> GetUserAggregateAsync(Expression<Func<TUser, bool>> filter)
         {
-            var user = await Users.FirstOrDefaultAsync(filter).WithCurrentCulture();
+            TKey id;
+            TUser user;
+            if (FindByIdFilterParser.TryMatchAndGetId(filter, out id))
+            {
+                user = await _userStore.GetByIdAsync(id).WithCurrentCulture();
+            }
+            else
+            {
+                user = await Users.FirstOrDefaultAsync(filter).WithCurrentCulture();
+            }
             if (user != null)
             {
                 await EnsureClaimsLoaded(user).WithCurrentCulture();
@@ -921,6 +931,87 @@ namespace Microsoft.AspNet.Identity.EntityFramework
             _disposed = true;
             Context = null;
             _userStore = null;
+        }
+
+        // We want to use FindAsync() when looking for an User.Id instead of LINQ to avoid extra 
+        // database roundtrips. This class cracks open the filter expression passed by 
+        // UserStore.FindByIdAsync() to obtain the value of the id we are looking for 
+        private static class FindByIdFilterParser
+        {
+            // expression pattern we need to match
+            private static readonly Expression<Func<TUser, bool>> Predicate = u => u.Id.Equals(default(TKey));
+            // method we need to match: Object.Equals() 
+            private static readonly MethodInfo EqualsMethodInfo = ((MethodCallExpression)Predicate.Body).Method;
+            // property access we need to match: User.Id 
+            private static readonly MemberInfo UserIdMemberInfo = ((MemberExpression)((MethodCallExpression)Predicate.Body).Object).Member;
+
+            internal static bool TryMatchAndGetId(Expression<Func<TUser, bool>> filter, out TKey id)
+            {
+                // default value in case we can’t obtain it 
+                id = default(TKey);
+
+                // lambda body should be a call 
+                if (filter.Body.NodeType != ExpressionType.Call)
+                {
+                    return false;
+                }
+
+                // actually a call to object.Equals(object)
+                var callExpression = (MethodCallExpression)filter.Body;
+                if (callExpression.Method != EqualsMethodInfo)
+                {
+                    return false;
+                }
+                // left side of Equals() should be an access to User.Id
+                if (callExpression.Object == null
+                    || callExpression.Object.NodeType != ExpressionType.MemberAccess
+                    || ((MemberExpression)callExpression.Object).Member != UserIdMemberInfo)
+                {
+                    return false;
+                }
+
+                // There should be only one argument for Equals()
+                if (callExpression.Arguments.Count != 1)
+                {
+                    return false;
+                }
+
+                MemberExpression fieldAccess;
+                if (callExpression.Arguments[0].NodeType == ExpressionType.Convert)
+                {
+                    // convert node should have an member access access node
+                    // This is for cases when primary key is a value type
+                    var convert = (UnaryExpression)callExpression.Arguments[0];
+                    if (convert.Operand.NodeType != ExpressionType.MemberAccess)
+                    {
+                        return false;
+                    }
+                    fieldAccess = (MemberExpression)convert.Operand;
+                }
+                else if (callExpression.Arguments[0].NodeType == ExpressionType.MemberAccess)
+                {
+                    // Get field member for when key is reference type
+                    fieldAccess = (MemberExpression)callExpression.Arguments[0];
+                }
+                else
+                {
+                    return false;
+                }
+
+                // and member access should be a field access to a variable captured in a closure
+                if (fieldAccess.Member.MemberType != MemberTypes.Field
+                    || fieldAccess.Expression.NodeType != ExpressionType.Constant)
+                {
+                    return false;
+                }
+
+                // expression tree matched so we can now just get the value of the id 
+                var fieldInfo = (FieldInfo)fieldAccess.Member;
+                var closure = ((ConstantExpression)fieldAccess.Expression).Value;
+
+                id = (TKey)fieldInfo.GetValue(closure);
+                return true;
+            }
         }
     }
 }
